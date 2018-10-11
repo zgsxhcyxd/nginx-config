@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
+	<title>确认密码</title>
+    <meta name="description" content="">
+    <meta name="author" content="KEVIN">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="transparent">
+    <meta name="format-detection" content="telephone=no,email=no"/>
+    <script src="md5.js"></script>
+</head>
+<style>
+*{
+  padding:0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family:"Microsoft YaHei", Arial, "Helvetica Neue", Helvetica, sans-serif;
+  color: #333;
+  box-sizing: border-box;
+  /*font-weight: bold;*/
+}
+a:hover, a:focus {
+  text-decoration: none;
+}
+input{
+  outline: none;
+  width:150px;
+  height:30px;
+  border:1px solid #ddd;
+  border-radius: 3px;
+  padding-left:5px;
+}
+.password{
+	width:300px;
+	margin:20px auto;
+	margin-top:200px;
+}
+.password2{
+	width:300px;
+	margin:0 auto;
+}
+span{
+	display: inline-block;
+	width:150px;
+	/*text-align: right;*/
+}
+.btn{
+	width:100px;
+	height:30px;
+	background: #fc3;
+	color:#fff;
+	margin:50px auto;
+	border-radius: 5px;
+	border:none;
+	line-height: 30px;
+	text-align: center;
+}
+</style>
+<body>
+<form action="">
+  <div class="password"><span>New password</span><input id="pwd1" onchange="change()" name="name" value="" type="password"> </div>
+  <div class="password2"><span>Confirm password</span><input onchange="change()" id="pwd2" type="password"></div>
+</form>
+
+  <p class="btn" onclick="mess()">Confirm</p>
+  <script>
+
+  function GetQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return (r[2]);
+        return null;
+    }
+
+  var email = GetQueryString('email');
+  var token = GetQueryString('token');
+  var a="",b=""
+  function change(){
+      a=document.getElementById("pwd1").value;
+      b=document.getElementById("pwd2").value;
+  }
+  function mess(){
+    if(a==""||b==""){
+      alert('Please enter your password')
+    }else if(a==b){
+      var pass = hex_md5(a),
+          pass2 = hex_md5(b)
+          console.log(pass+'  '+pass2)
+      var xmlhttp = new XMLHttpRequest();
+      xmlhttp.open("POST","http://dev-api.walkingpad.com/user/api/v1/forget");
+      xmlhttp.setRequestHeader("Content-type","application/json");
+      var jsonObj = {
+                  "hash_email":email,
+                  "token":token,
+                  "password":pass,
+                  "confirm_password":pass2
+                }
+      xmlhttp.send(JSON.stringify(jsonObj))
+      xmlhttp.onreadystatechange= function () {
+          if(xmlhttp.readyState==4&&xmlhttp.status==200){
+              var data =JSON.parse(xmlhttp.responseText)
+              if(data.code==200){
+                window.location.href="http://dev-api.walkingpad.com/success"
+              }else{
+                  window.location.href="http://dev-api.walkingpad.com/failed"
+              }
+          }
+      }
+    }else{
+      alert('Incorrect format')
+    }
+
+  }
+  </script>
+</body>
+</html>

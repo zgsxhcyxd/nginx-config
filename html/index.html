@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+   <script>
+    function GetQueryString(name) { 
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return (r[2]);
+        return null;
+    } 
+    var ver = GetQueryString('ver')
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open("GET","http://dev-api.walkingpad.com/user/api/v1/registered?ver="+ver);
+    xmlhttp.send();
+    xmlhttp.onreadystatechange= function () {
+        if(xmlhttp.readyState==4&&xmlhttp.status==200){
+            var data =JSON.parse(xmlhttp.responseText)
+            if(data.code==200){
+                window.location.href="http://dev-api.walkingpad.com/success"
+            }else{
+                window.location.href="http://dev-api.walkingpad.com/failed"
+            }
+
+        }
+    }
+   </script> 
+                
+</body>
+</html>
